@@ -1,0 +1,12 @@
+metrica,valore
+titolo,TEST OOS (2020-08-19 -> 2024-12-30)
+capitale_finale_agente,106368.13640594482
+capitale_finale_bh,153414.76202011108
+rendimento_agente,0.06368136405944824
+rendimento_bh,0.5341476202011108
+sharpe_agente,0.17941360436257517
+sharpe_bh,0.6520531505076401
+max_drawdown_agente,-0.21504892057502545
+max_drawdown_bh,-0.26402817343033275
+%_investito_medio,0.3943321616871705
+n_operazioni,141

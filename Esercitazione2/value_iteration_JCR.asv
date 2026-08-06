@@ -1,0 +1,83 @@
+clear all
+close all
+clc
+
+% for reproducibility fix random seed
+rng(2)
+
+% load model
+load modelJCR.mat %si carica P, R e gamma creat ein precdenze nello script Modeling JCR
+
+% treshold for stopping
+theta = 1e-6;
+
+% gather dimensions
+S = size(R, 1);
+A = size(R, 2);
+
+% initialize V and pi
+V = randn(S,1);
+
+% count iterations
+count = 0;
+
+% repeat until convergence
+while true
+    % increment the counter
+    count = count + 1;
+    
+    % maximum increment
+    Delta = 0;
+    for s = 1:S
+        % sweep for evaluation for each action
+        q = zeros(A,1);
+        for a = 1:A
+            q(a) = R(s,a) + gamma*P(s,:,a)*V;
+        end
+        % one step of improvement
+        Vp = max(q);
+        Delta = max([Delta, Vp - V(s)]);
+        % update the estimate
+        V(s) = Vp;
+    end
+
+    % interruption criterion
+    if Delta < theta
+        break;
+    end
+
+    disp([count,Delta])
+end
+
+% the optimal policy is greedy with respect to Vstar
+pi = policy_improvement(P, R, V, gamma);
+
+save vstarVI.mat V
+
+%% plot the optimal policy
+N1 = 30;
+N2 = 30;
+cars_moved = 7;
+
+% optimal policy and value function
+ncars1 = zeros(N1+1,N2+1);
+ncars2 = zeros(N1+1,N2+1);
+pistar = zeros(N1+1,N2+1);
+vstar = zeros(N1+1,N2+1);
+
+for c1 = 0:N1
+    for c2 = 0:N2
+        ncars1(c1+1,c2+1) = c1;
+        ncars2(c1+1,c2+1) = c2;
+        % map number of cars in states
+        state = sub2ind([N1+1, N2+1], c1+1, c2+1);
+        pistar(c1+1,c2+1) = pi(state) - cars_moved - 1;
+        vstar(c1+1,c2+1) = V(state);
+    end
+end
+
+figure()
+contourf(ncars1,ncars2,pistar,-cars_moved:cars_moved)
+
+figure()
+surf(ncars1,ncars2,vstar)
